@@ -62,6 +62,7 @@ http {
     # Live
     server {
         listen       80;
+        listen       443;
         server_name  {{getv "/live/fqdn"}};
                 
         # Switch on server cache
