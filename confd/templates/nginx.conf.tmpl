@@ -59,13 +59,6 @@ http {
         }
     }
     
-    # Redirect to www for live
-    server {
-        listen        80;
-        server_name   {{getv "/live/fqdn"}};
-        return        301 $scheme://www.{{getv "/live/fqdn"}}$request_uri;
-    }
-    
     # Live
     server {
         listen       80;
