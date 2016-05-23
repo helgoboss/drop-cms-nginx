@@ -81,7 +81,7 @@ http {
         add_header X-Cache-Status $upstream_cache_status;
 
         location / {
-            proxy_pass  http://127.0.0.1:16001;
+            proxy_pass  http://drop-cms-live:8080;
             proxy_redirect http:// $scheme://;
         }
         
