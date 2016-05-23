@@ -62,7 +62,7 @@ http {
     # Live
     server {
         listen       80;
-        server_name  www.{{getv "/live/fqdn"}};
+        server_name  {{getv "/live/fqdn"}};
                 
         # Switch on server cache
         proxy_cache drop-cms-live-cache;  
