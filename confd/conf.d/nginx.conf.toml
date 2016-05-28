@@ -3,7 +3,7 @@ src = "nginx.conf.tmpl"
 dest = "/etc/nginx/nginx.conf"
 keys = [
   "/preview/fqdn",
-  "/primary/live/fqdn"
+  "/primary/live/fqdn",
   "/secondary/live/fqdn"
 ]
 owner = "root"
