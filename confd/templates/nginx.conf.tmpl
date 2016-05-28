@@ -60,10 +60,20 @@ http {
     }
     
     # Live
+    
+    {{if exists "/secondary/live/fqdn"}}
+    server {
+        listen        80;
+        listen       443;
+        server_name   {{getv "/secondary/live/fqdn"}};
+        return        301 $scheme://{{getv "/primary/live/fqdn"}}$request_uri;
+    }
+    {{end}}
+    
     server {
         listen       80;
         listen       443;
-        server_name  {{getv "/live/fqdn"}};
+        server_name  {{getv "/primary/live/fqdn"}};
                 
         # Switch on server cache
         proxy_cache drop-cms-live-cache;  
