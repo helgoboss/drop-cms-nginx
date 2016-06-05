@@ -35,15 +35,8 @@ http {
     # Redirect to HTTPS for preview
     server {
         listen 80;
-        listen       443 {{if exists "/cert/path"}}ssl{{end}};
         server_name  {{getv "/preview/fqdn"}};
-        
-        {{if exists "/cert/path"}}
-        # SSL
-        ssl_certificate     {{getv "/cert/path"}}.crt;
-        ssl_certificate_key {{getv "/cert/path"}}.key;
-        {{end}}
-        
+                
         return 301 https://$host$request_uri;
     }
     
