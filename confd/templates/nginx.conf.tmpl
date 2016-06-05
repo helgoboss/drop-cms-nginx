@@ -35,18 +35,32 @@ http {
     # Redirect to HTTPS for preview
     server {
         listen 80;
+        listen       443 {{if exists "/cert/path"}}ssl{{end}};
         server_name  {{getv "/preview/fqdn"}};
+        
+        {{if exists "/cert/path"}}
+        # SSL
+        ssl_certificate     {{getv "/cert/path"}}.crt;
+        ssl_certificate_key {{getv "/cert/path"}}.key;
+        {{end}}
+        
         return 301 https://$host$request_uri;
     }
     
     # Preview
     server {
-        listen       443;
+        listen       443 {{if exists "/cert/path"}}ssl{{end}};
         server_name  {{getv "/preview/fqdn"}};
         
+        {{if exists "/cert/path"}}
+        # SSL
+        ssl_certificate     {{getv "/cert/path"}}.crt;
+        ssl_certificate_key {{getv "/cert/path"}}.key;
+        {{end}}
+                
         # Access only with password
         auth_basic "Closed website";
-        auth_basic_user_file /etc/nginx/htpasswd;
+        auth_basic_user_file {{getv "/htpasswd/path"}};
 
         location / {
             proxy_pass  http://drop-cms-preview:8080;
@@ -64,16 +78,29 @@ http {
     {{if exists "/secondary/live/fqdn"}}
     server {
         listen        80;
-        listen       443;
+        listen       443 {{if exists "/cert/path"}}ssl{{end}};
         server_name   {{getv "/secondary/live/fqdn"}};
+        
+        {{if exists "/cert/path"}}
+        # SSL
+        ssl_certificate     {{getv "/cert/path"}}.crt;
+        ssl_certificate_key {{getv "/cert/path"}}.key;
+        {{end}}
+        
         return        301 $scheme://{{getv "/primary/live/fqdn"}}$request_uri;
     }
     {{end}}
     
     server {
         listen       80;
-        listen       443;
+        listen       443 {{if exists "/cert/path"}}ssl{{end}};
         server_name  {{getv "/primary/live/fqdn"}};
+        
+        {{if exists "/cert/path"}}
+        # SSL
+        ssl_certificate     {{getv "/cert/path"}}.crt;
+        ssl_certificate_key {{getv "/cert/path"}}.key;
+        {{end}}
                 
         # Switch on server cache
         proxy_cache drop-cms-live-cache;  

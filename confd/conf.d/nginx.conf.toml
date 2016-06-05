@@ -4,7 +4,9 @@ dest = "/etc/nginx/nginx.conf"
 keys = [
   "/preview/fqdn",
   "/primary/live/fqdn",
-  "/secondary/live/fqdn"
+  "/secondary/live/fqdn",
+  "/htpasswd/path",
+  "/cert/path"
 ]
 owner = "root"
 mode = "0644"
