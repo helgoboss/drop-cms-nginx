@@ -32,6 +32,10 @@ http {
     # HTTP and HTTPS should deliver exactly the same results here so we don't want $scheme to be included in the cache key
     proxy_cache_key "$request_method$host$request_uri$is_args$args";                 
   
+  
+    # Preview
+
+    {{if exists "/cert/path"}}
     # Redirect to HTTPS for preview
     server {
         listen 80;
@@ -39,10 +43,13 @@ http {
                 
         return 301 https://$host$request_uri;
     }
+    {{end}}
     
-    # Preview
     server {
-        listen       443 {{if exists "/cert/path"}}ssl{{end}};
+        listen 80;
+        {{if exists "/cert/path"}}
+        listen       443 ssl;
+        {{end}}
         server_name  {{getv "/preview/fqdn"}};
         
         {{if exists "/cert/path"}}
@@ -50,8 +57,19 @@ http {
         ssl_certificate     {{getv "/cert/path"}}.crt;
         ssl_certificate_key {{getv "/cert/path"}}.key;
         {{end}}
+
+        # Redirect HTTP to HTTPS
+        {{if exists "/cert/path"}}
+            if($scheme = "http") {
+                return 301 https://$host$request_uri;
+            }
+        {{end}}
+
+        if ($http_x_forwarded_proto = "http") {
+            return 301 https://$host$request_uri;
+        }
                 
-        # Access only with password
+        # Access with password only
         auth_basic "Closed website";
         auth_basic_user_file {{getv "/htpasswd/path"}};
 
@@ -71,7 +89,9 @@ http {
     {{if exists "/secondary/live/fqdn"}}
     server {
         listen        80;
-        listen       443 {{if exists "/cert/path"}}ssl{{end}};
+        {{if exists "/cert/path"}}
+        listen       443 ssl;
+        {{end}}
         server_name   {{getv "/secondary/live/fqdn"}};
         
         {{if exists "/cert/path"}}
@@ -86,7 +106,9 @@ http {
     
     server {
         listen       80;
-        listen       443 {{if exists "/cert/path"}}ssl{{end}};
+        {{if exists "/cert/path"}}
+        listen       443 ssl;
+        {{end}}
         server_name  {{getv "/primary/live/fqdn"}};
         
         {{if exists "/cert/path"}}
