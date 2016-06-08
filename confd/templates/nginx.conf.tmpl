@@ -65,7 +65,8 @@ http {
 
         location / {
             proxy_pass  http://drop-cms-preview:8080;
-            proxy_redirect http:// $scheme://;
+            # TODO use $scheme instead of $http_x_forwarded_proto if this Nginx terminates SSL
+            proxy_redirect http:// $http_x_forwarded_proto://;
         }
         
         error_page   500 502 503 504  /50x.html;
@@ -90,7 +91,8 @@ http {
         ssl_certificate_key {{getv "/cert/path"}}.key;
         {{end}}
         
-        return        301 $scheme://{{getv "/primary/live/fqdn"}}$request_uri;
+        # TODO use $scheme instead of $http_x_forwarded_proto if this Nginx terminates SSL
+        return        301 $http_x_forwarded_proto://{{getv "/primary/live/fqdn"}}$request_uri;
     }
     {{end}}
     
@@ -125,7 +127,8 @@ http {
 
         location / {
             proxy_pass  http://drop-cms-live:8080;
-            proxy_redirect http:// $scheme://;
+            # TODO use $scheme instead of $http_x_forwarded_proto if this Nginx terminates SSL
+            proxy_redirect http:// $http_x_forwarded_proto://;
         }
         
         error_page   500 502 503 504  /50x.html;
