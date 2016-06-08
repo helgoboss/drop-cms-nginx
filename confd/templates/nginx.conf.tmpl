@@ -34,16 +34,6 @@ http {
   
   
     # Preview
-
-    {{if exists "/cert/path"}}
-    # Redirect to HTTPS for preview
-    server {
-        listen 80;
-        server_name  {{getv "/preview/fqdn"}};
-                
-        return 301 https://$host$request_uri;
-    }
-    {{end}}
     
     server {
         listen 80;
