@@ -37,19 +37,19 @@ http {
     
     server {
         listen 80;
-        {{if exists "/cert/path"}}
+        {{if getv "/cert/path"}}
         listen       443 ssl;
         {{end}}
         server_name  {{getv "/preview/fqdn"}};
         
-        {{if exists "/cert/path"}}
+        {{if getv "/cert/path"}}
         # SSL
         ssl_certificate     {{getv "/cert/path"}}.crt;
         ssl_certificate_key {{getv "/cert/path"}}.key;
         {{end}}
 
         # Redirect HTTP to HTTPS
-        {{if exists "/cert/path"}}
+        {{if getv "/cert/path"}}
             if ($scheme = "http") {
                 return 301 https://$host$request_uri;
             }
@@ -76,15 +76,15 @@ http {
     
     # Live
     
-    {{if exists "/secondary/live/fqdn"}}
+    {{if getv "/secondary/live/fqdn"}}
     server {
         listen        80;
-        {{if exists "/cert/path"}}
+        {{if getv "/cert/path"}}
         listen       443 ssl;
         {{end}}
         server_name   {{getv "/secondary/live/fqdn"}};
         
-        {{if exists "/cert/path"}}
+        {{if getv "/cert/path"}}
         # SSL
         ssl_certificate     {{getv "/cert/path"}}.crt;
         ssl_certificate_key {{getv "/cert/path"}}.key;
@@ -96,12 +96,12 @@ http {
     
     server {
         listen       80;
-        {{if exists "/cert/path"}}
+        {{if getv "/cert/path"}}
         listen       443 ssl;
         {{end}}
         server_name  {{getv "/primary/live/fqdn"}};
         
-        {{if exists "/cert/path"}}
+        {{if getv "/cert/path"}}
         # SSL
         ssl_certificate     {{getv "/cert/path"}}.crt;
         ssl_certificate_key {{getv "/cert/path"}}.key;
