@@ -31,7 +31,7 @@ http {
     proxy_cache_path /var/cache/nginx/drop-cms-live keys_zone=drop-cms-live-cache:10m
                      max_size=1000m inactive=7d;
     # HTTP and HTTPS should deliver exactly the same results here so we don't want $scheme to be included in the cache key
-    proxy_cache_key "$request_method$host$request_uri$is_args$args";                 
+    proxy_cache_key "$request_method$host$request_uri$is_args$args$http_accept_language";                 
   
   
     # Preview
