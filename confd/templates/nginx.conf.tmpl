@@ -25,6 +25,9 @@ http {
                     max_size=1000m inactive=7d;
     proxy_cache_use_stale updating error timeout http_500 http_502 http_503 http_504;
     proxy_cache_background_update on;
+           
+    # Use this name server to resolve proxy backends dynamically (in Rancher that means that backends can be restarted and nginx is going to find them)
+    resolver {{getv "/nameserver"}};
     
     # Default server
     server {
@@ -62,7 +65,9 @@ http {
         auth_basic_user_file {{getv "/htpasswd/path"}};
 
         location / {
-            proxy_pass  http://drop-cms-preview:8080;
+            # Use proxy_pass with variable to force dynamic DNS lookup
+            set $backend "http://drop-cms-preview:8080";
+            proxy_pass $backend;
             # TODO use $scheme instead of $http_x_forwarded_proto if this Nginx terminates SSL
             proxy_redirect http:// $http_x_forwarded_proto://;
         }
@@ -138,7 +143,9 @@ http {
         add_header X-Cache-Status $upstream_cache_status;
 
         location / {
-            proxy_pass  http://drop-cms-live:8080;
+            # Use proxy_pass with variable to force dynamic DNS lookup
+            set $backend "http://drop-cms-live:8080";
+            proxy_pass $backend;
             # TODO use $scheme instead of $http_x_forwarded_proto if this Nginx terminates SSL
             proxy_redirect http:// $http_x_forwarded_proto://;
         }

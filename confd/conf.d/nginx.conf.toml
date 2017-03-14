@@ -6,7 +6,8 @@ keys = [
   "/primary/live/fqdn",
   "/secondary/live/fqdn",
   "/htpasswd/path",
-  "/cert/path"
+  "/cert/path",
+  "/nameserver"
 ]
 owner = "root"
 mode = "0644"
