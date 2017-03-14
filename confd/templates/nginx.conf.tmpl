@@ -20,6 +20,10 @@ http {
     # Enable keep-alive connections to reduce server load and increase performance (very good for SSL also)
     keepalive_timeout  65;
     
+    # Configure cache
+    proxy_cache_path /var/cache/nginx/drop-cms-live keys_zone=drop-cms-live-cache:10m
+                    max_size=1000m inactive=7d;
+    
     # Default server
     server {
         return 404;
@@ -111,9 +115,6 @@ http {
             set $language_suffix 'de';
         }
         
-        # Configure cache
-        proxy_cache_path /var/cache/nginx/drop-cms-live keys_zone=drop-cms-live-cache:10m
-                        max_size=1000m inactive=7d;
         # HTTP and HTTPS should deliver exactly the same results here so we don't want $scheme to be included in the cache key
         proxy_cache_key "$request_method$host$request_uri$is_args$args$language_suffix";                 
                 
