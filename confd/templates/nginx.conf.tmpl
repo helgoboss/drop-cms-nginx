@@ -23,6 +23,8 @@ http {
     # Configure cache
     proxy_cache_path /var/cache/nginx/drop-cms-live keys_zone=drop-cms-live-cache:10m
                     max_size=1000m inactive=7d;
+    proxy_cache_use_stale updating error timeout http_500 http_502 http_503 http_504;
+    proxy_cache_background_update on;
     
     # Default server
     server {
@@ -121,11 +123,12 @@ http {
         # Switch on server cache
         proxy_cache drop-cms-live-cache;  
         
-        # We cache a long time and explicitly use wget with custom HTTP header X-Refresh-Cache to refresh cache on publish.
+        # We cache a short time and explicitly use wget with custom HTTP header X-Refresh-Cache to refresh cache on publish.
         # We don't cache forever because otherwise removed pages would stay forever.
-        # A slow crawler in background takes care to keep the cache warm so nobody ever needs to wait.
-        proxy_cache_valid 200 302 60m;
-        proxy_cache_valid 404 60m;
+        # Previously, a slow crawler in background took care to keep the cache warm so nobody ever needs to wait. Now we have
+        # proxy_cache_background_update.
+        proxy_cache_valid 200 302 1m;
+        proxy_cache_valid 404 1m;
         proxy_cache_bypass $http_x_refresh_cache;
                
         # Switch on client cache
