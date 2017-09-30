@@ -13,6 +13,12 @@ http {
     # Pass some nice info to backend
     proxy_set_header Host $host;
     
+    # Determine the protocol really used from the Browser (proto)
+    map $http_x_forwarded_proto $proto {
+        default  $http_x_forwarded_proto;
+        ""       $scheme;
+    }
+    
     # Backend shall see the real IP, not the one of the proxy
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -40,7 +46,7 @@ http {
         listen 80;
         server_name  {{getv "/preview/fqdn"}};
 
-        if ($http_x_forwarded_proto = "http") {
+        if ($proto = "http") {
             return 301 https://$host$request_uri;
         }
                 
@@ -52,7 +58,7 @@ http {
             # Use proxy_pass with variable to force dynamic DNS lookup
             set $backend "http://drop-cms-preview:8080";
             proxy_pass $backend;
-            proxy_redirect http:// $http_x_forwarded_proto://;
+            proxy_redirect http:// $proto://;
         }
         
         error_page   500 502 503 504  /50x.html;
@@ -68,7 +74,7 @@ http {
         listen        80;
         server_name   {{getv "/secondary/live/fqdn"}};
 
-        return        301 $http_x_forwarded_proto://{{getv "/primary/live/fqdn"}}$request_uri;
+        return        301 $proto://{{getv "/primary/live/fqdn"}}$request_uri;
     }
     {{end}}
     
@@ -110,7 +116,7 @@ http {
             # Use proxy_pass with variable to force dynamic DNS lookup
             set $backend "http://drop-cms-live:8080";
             proxy_pass $backend;
-            proxy_redirect http:// $http_x_forwarded_proto://;
+            proxy_redirect http:// $proto://;
         }
         
         error_page   500 502 503 504  /50x.html;
