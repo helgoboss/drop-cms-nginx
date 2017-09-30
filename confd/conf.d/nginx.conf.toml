@@ -6,7 +6,6 @@ keys = [
   "/primary/live/fqdn",
   "/secondary/live/fqdn",
   "/htpasswd/path",
-  "/cert/path",
   "/nameserver"
 ]
 owner = "root"

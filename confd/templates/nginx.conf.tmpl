@@ -38,23 +38,7 @@ http {
     
     server {
         listen 80;
-        {{if getv "/cert/path"}}
-        listen       443 ssl;
-        {{end}}
         server_name  {{getv "/preview/fqdn"}};
-        
-        {{if getv "/cert/path"}}
-        # SSL
-        ssl_certificate     {{getv "/cert/path"}}.crt;
-        ssl_certificate_key {{getv "/cert/path"}}.key;
-        {{end}}
-
-        # Redirect HTTP to HTTPS
-        {{if getv "/cert/path"}}
-            if ($scheme = "http") {
-                return 301 https://$host$request_uri;
-            }
-        {{end}}
 
         if ($http_x_forwarded_proto = "http") {
             return 301 https://$host$request_uri;
@@ -68,7 +52,6 @@ http {
             # Use proxy_pass with variable to force dynamic DNS lookup
             set $backend "http://drop-cms-preview:8080";
             proxy_pass $backend;
-            # TODO use $scheme instead of $http_x_forwarded_proto if this Nginx terminates SSL
             proxy_redirect http:// $http_x_forwarded_proto://;
         }
         
@@ -83,34 +66,15 @@ http {
     {{if getv "/secondary/live/fqdn"}}
     server {
         listen        80;
-        {{if getv "/cert/path"}}
-        listen       443 ssl;
-        {{end}}
         server_name   {{getv "/secondary/live/fqdn"}};
-        
-        {{if getv "/cert/path"}}
-        # SSL
-        ssl_certificate     {{getv "/cert/path"}}.crt;
-        ssl_certificate_key {{getv "/cert/path"}}.key;
-        {{end}}
-        
-        # TODO use $scheme instead of $http_x_forwarded_proto if this Nginx terminates SSL
+
         return        301 $http_x_forwarded_proto://{{getv "/primary/live/fqdn"}}$request_uri;
     }
     {{end}}
     
     server {
         listen       80;
-        {{if getv "/cert/path"}}
-        listen       443 ssl;
-        {{end}}
         server_name  {{getv "/primary/live/fqdn"}};
-        
-        {{if getv "/cert/path"}}
-        # SSL
-        ssl_certificate     {{getv "/cert/path"}}.crt;
-        ssl_certificate_key {{getv "/cert/path"}}.key;
-        {{end}}
         
         # Determine preferred language: accept-language: en,en-US;q=0.8,ja;q=0.6
         set $first_language $http_accept_language;
@@ -146,7 +110,6 @@ http {
             # Use proxy_pass with variable to force dynamic DNS lookup
             set $backend "http://drop-cms-live:8080";
             proxy_pass $backend;
-            # TODO use $scheme instead of $http_x_forwarded_proto if this Nginx terminates SSL
             proxy_redirect http:// $http_x_forwarded_proto://;
         }
         
